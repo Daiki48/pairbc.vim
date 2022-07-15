@@ -52,3 +52,11 @@ function! pairbc#InputParentheses(parenthesis) abort
   endif
 endfunction
 
+function! pairbc#InputCloseParenthesis(parenthesis) abort
+  let l:nextChar = pairbc#GetNextString(1)
+  if l:nextChar == a:parenthesis
+    return "\<RIGHT>"
+  else
+    return a:parenthesis
+  endif
+endfunction
