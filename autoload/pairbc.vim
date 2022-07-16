@@ -119,7 +119,25 @@ function! pairbc#InputSpace() abort
   endif
 endfunction
 
+function! pairbc#InputBS() abort
+  let l:nextChar = pairbc#GetNextString(1)
+  let l:prevChar = pairbc#GetPrevString(1)
+  let l:nextTwoChar = pairbc#GetNextString(2)
+  let l:prevTwoChar = pairbc#GetPrevString(2)
+  let l:cursorIsInsideParentheses = pairbc#IsInsideParentheses(l:prevChar,l:nextChar)
+  let l:cursorIsInsideSpace1 = (l:prevTwoChar == "{ " && l:nextTwoChar == " }" )
+  let l:cursorIsInsideSpace2 = (l:prevTwoChar == "[ " && l:nextTwoChar == " ]" )
+  let l:cursorIsInsideSpace3 = (l:prevTwoChar == "( " && l:nextTwoChar == " )" )
+  let l:cursorIsInsideSpace = (l:cursorIsInsideSpace1 || l:cursorIsInsideSpace2 || l:cursorIsInsideSpace3)
+  let l:existQuotation = (l:prevChar == "'" && l:nextChar == "'")
+  let l:existsDoubleQuotation = (l:prevChar == "\"" && l:nextChar == "\"")
 
+  if l:cursorIsInsideParentheses || l:cursorIsInsideSpace || l:existQuotation || l:existsDoubleQuotation
+    return "\<BS>\<RIGHT>\<BS>"
+  else
+    return "\<BS>"
+  endif
+endfunction
 
 
 
