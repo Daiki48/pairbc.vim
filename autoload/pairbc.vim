@@ -1,3 +1,5 @@
+" init settings
+
 function! pairbc#GetNextString(length) abort
   let l:str = ""
   for i in range(0, a:length-1)
@@ -25,9 +27,11 @@ function! pairbc#IsFullWidth(char) abort
 endfunction
 
 function! pairbc#IsNum(char) abort
-  let l:charIsnum = (a:char >= "0" && a:char <= "9")
+  let l:charIsNum = (a:char >= "0" && a:char <= "9")
   return (l:charIsNum)
 endfunction
+
+" brackets
 
 function pairbc#IsInsideParentheses(prevChar, nextChar) abort
   let l:cursorIsInsideParentheses1 = (a:prevChar == "{" && a:nextChar == "}")
@@ -60,3 +64,64 @@ function! pairbc#InputCloseParenthesis(parenthesis) abort
     return a:parenthesis
   endif
 endfunction
+
+" Quotation
+
+function! pairbc#InputQuotation(quot) abort
+  let l:nextChar = pairbc#GetNextString(1)
+  let l:prevChar = pairbc#GetPrevString(1)
+
+  let l:cursorIsInsideQuotations = (l:prevChar == a:quot && l:nextChar == a:quot)
+  let l:nextCharIsEmpty = (l:nextChar == "")
+  let l:nextCharIsClosingParenthesis = (l:nextChar == "}" || l:nextChar == "]" || l:nextChar == ")")
+  let l:nextCharIsSpace = (l:nextChar == " ")
+  let l:prevCharIsAlphabet = pairbc#IsAlphabet(l:prevChar)
+  let l:prevCharIsFullWidth = pairbc#IsFullWidth(l:prevChar)
+  let l:prevCharIsNum = pairbc#IsNum(l:prevChar)
+  let l:prevCharIsQuotation = (l:prevChar == "\'" || l:prevChar == "\"" || l:prevChar == "\`")
+  
+  if l:cursorIsInsideQuotations
+    return "\<RIGHT>"
+  elseif l:prevCharIsAlphabet || l:prevCharIsNum || l:prevCharIsFullWidth || l:prevCharIsQuotation
+    return a:quot
+  elseif l:nextCharIsEmpty || l:nextCharIsClosingParenthesis || nextCharIsSpace
+    return a:quot.a:quot."\<LEFT>"
+  else
+    return a:quot
+  endif
+endfunction
+
+" newline
+
+function! pairbc#InputCR() abort
+  let l:nextChar = pairbc#GetNextString(1)
+  let l:prevChar = pairbc#GetPrevString(1)
+  let l:cursorIsInsideParentheses = pairbc#IsInsideParentheses(l:prevChar, l:nextChar)
+
+  if l:cursorIsInsideParentheses
+    return "\<CR>\<ESC>\<S-o>"
+  else
+    return "\<CR>"
+  endif
+endfunction
+
+" space
+
+function! pairbc#InputSpace() abort
+  let l:nextChar = pairbc#GetNextString(1)
+  let l:prevChar = pairbc#GetPrevString(1)
+  let l:cursorIsInsideParentheses = pairbc#IsInsideParentheses(l:prevChar, l:nextChar)
+
+  if l:cursorIsInsideParentheses
+    return "\<Space>\<Space>\<LEFT>"
+  else
+    return "\<Space>"
+  endif
+endfunction
+
+
+
+
+
+
+
