@@ -139,7 +139,15 @@ function! pairbc#InputBS() abort
   endif
 endfunction
 
-
+function! pairbc#ClipInParentheses(parenthesis) abort
+  let l:mode = mode()
+  let l:parentheses = { "{": "}", "[": "]", "(": ")" }
+  if l:mode ==# "v"
+    return "\"ac".a:parenthesis."\<ESC>\"agpi".l:parentheses[a:parenthesis]
+  elseif l:mode ==# "V"
+    return "\"ac".l:parentheses[a:parenthesis]."\<ESC>\"aPi".a:parenthesis."\<CR>\<ESC>\<UP>=%"
+  endif
+endfunction
 
 
 
